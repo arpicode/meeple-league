@@ -24,25 +24,27 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "player", schema = "league")
 public class Player {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
 
-  @Setter
-  @NonNull
-  @Column(name = "username", length = 50)
-  private String username;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Setter
-  @NonNull
-  @Column(name = "email", length = 255)
-  private String email;
+    @Setter
+    @NonNull
+    @Column(name = "username", length = 50)
+    private String username;
 
-  @Generated(event = EventType.INSERT) // Posé par le DEFAULT now() de la colonne
-  @Column(name = "created_at")
-  private OffsetDateTime createdAt;
+    @Setter
+    @NonNull
+    @Column(name = "email", length = 255)
+    private String email;
 
-  @Generated(event = { EventType.INSERT, EventType.UPDATE }) // Valeur générée par le trigger trg_player_updated_at
-  @Column(name = "updated_at")
-  private OffsetDateTime updatedAt;
+    @Generated(event = EventType.INSERT) // Posé par le DEFAULT now() de la colonne
+    @Column(name = "created_at")
+    private OffsetDateTime createdAt;
+
+    @Generated(event = { EventType.INSERT, EventType.UPDATE }) // Valeur générée par le trigger trg_player_updated_at
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
+
 }
