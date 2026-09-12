@@ -1,5 +1,7 @@
 package com.meepleleague.leagueapi.shared.error;
 
+import java.util.Map;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -13,6 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 
     private static final String CONFLICT_DETAIL = "The request conflicts with an existing resource.";
+    // Map of postgreSQL default constraint names to error codes and details
+    private static final Map<String, ConstraintError> CONSTRAINT_ERRORS = Map.of(
+            "player_username_key", new ConstraintError("USERNAME_ALREADY_EXISTS", "Username already exists."),
+            "player_email_key", new ConstraintError("EMAIL_ALREADY_EXISTS", "Email already exists."));
 
     @ExceptionHandler(BusinessException.class)
     public ProblemDetail handleBusinessException(BusinessException ex) {
@@ -31,11 +37,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail handleDataIntegrity(DataIntegrityViolationException ex) {
-        log.warn("Data integrity violation", ex);
 
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, CONFLICT_DETAIL);
+        String codeValue = "DATA_INTEGRITY_VIOLATION";
+        String detail = CONFLICT_DETAIL;
 
-        problem.setProperty("code", "DATA_INTEGRITY_VIOLATION");
+        if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException cve) {
+            ConstraintError error = CONSTRAINT_ERRORS.get(cve.getConstraintName());
+            if (error != null) {
+                codeValue = error.code();
+                detail = error.detail();
+                log.debug("Data integrity violation: {}", detail);
+            } else {
+                log.warn("Unmapped constraint violation: {}", cve.getConstraintName(), ex);
+            }
+        } else {
+            log.warn("Data integrity violation: {}", ex.getMessage(), ex);
+        }
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, detail);
+        problem.setProperty("code", codeValue);
 
         return problem;
     }
