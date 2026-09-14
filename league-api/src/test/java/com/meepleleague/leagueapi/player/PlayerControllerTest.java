@@ -2,6 +2,7 @@ package com.meepleleague.leagueapi.player;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -92,5 +93,26 @@ public class PlayerControllerTest {
                 .andExpect(header().doesNotExist("Location"))
                 .andExpect(jsonPath("$.code").value("EMAIL_ALREADY_EXISTS"))
                 .andExpect(jsonPath("$.detail").value("Email already exists."));
+    }
+
+    @Test
+    @DisplayName("should return 400 Bad Request when trying to create a player with username that is too short")
+    void createPlayerWithInvalidData() throws Exception {
+        mockMvc.perform(post("/players").contentType(APPLICATION_JSON)
+                .content("""
+                        {"username":"no","email":"testuser@example.com"}
+                        """))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(APPLICATION_PROBLEM_JSON));
+    }
+
+    @Test
+    @DisplayName("should return 404 Not Found when trying to get a player that does not exist")
+    void getPlayerNotFound() throws Exception {
+        mockMvc.perform(get("/players/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.code").value("PLAYER_NOT_FOUND"))
+                .andExpect(jsonPath("$.detail").value("Player of ID 999 not found."));
     }
 }

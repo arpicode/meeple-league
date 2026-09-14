@@ -16,3 +16,7 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+
+logging:
+  level:
+    '[com.meepleleague]': DEBUG

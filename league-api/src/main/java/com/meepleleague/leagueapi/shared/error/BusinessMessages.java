@@ -6,6 +6,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BusinessMessages {
 
-    public static final String PLAYER_NOT_FOUND = "Player of id %d not found.";
+    public static final String PLAYER_NOT_FOUND = "Player of ID %d not found.";
 
 }

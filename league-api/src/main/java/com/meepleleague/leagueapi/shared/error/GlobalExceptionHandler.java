@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final String CONFLICT_DETAIL = "The request conflicts with an existing resource.";
     // Map of postgreSQL default constraint names to error codes and details
     private static final Map<String, ConstraintError> CONSTRAINT_ERRORS = Map.of(
             "player_username_key", new ConstraintError("USERNAME_ALREADY_EXISTS", "Username already exists."),
@@ -39,7 +38,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleDataIntegrity(DataIntegrityViolationException ex) {
 
         String codeValue = "DATA_INTEGRITY_VIOLATION";
-        String detail = CONFLICT_DETAIL;
+        String detail = "The request conflicts with an existing resource.";
 
         if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException cve) {
             ConstraintError error = CONSTRAINT_ERRORS.get(cve.getConstraintName());
