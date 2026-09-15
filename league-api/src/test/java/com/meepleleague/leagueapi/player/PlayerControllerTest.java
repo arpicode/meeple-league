@@ -103,7 +103,10 @@ public class PlayerControllerTest {
                         {"username":"no","email":"testuser@example.com"}
                         """))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(APPLICATION_PROBLEM_JSON));
+                .andExpect(content().contentType(APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.errors[0].field").value("username"))
+                .andExpect(jsonPath("$.errors[0].message").value("Username must be between 3 and 50 characters"));
     }
 
     @Test
@@ -113,6 +116,7 @@ public class PlayerControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.code").value("PLAYER_NOT_FOUND"))
-                .andExpect(jsonPath("$.detail").value("Player of ID 999 not found."));
+                .andExpect(jsonPath("$.detail").value("Player of ID 999 not found."))
+                .andExpect(jsonPath("$.traceId").isNotEmpty());
     }
 }

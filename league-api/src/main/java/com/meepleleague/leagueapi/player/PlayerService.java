@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.meepleleague.leagueapi.shared.error.BusinessException;
-import com.meepleleague.leagueapi.shared.error.BusinessMessages;
+import com.meepleleague.leagueapi.shared.error.UserMessages;
 import com.meepleleague.leagueapi.shared.error.ErrorCode;
 
 @Service
@@ -61,7 +61,7 @@ public class PlayerService {
         return playerRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(
                         ErrorCode.PLAYER_NOT_FOUND,
-                        BusinessMessages.PLAYER_NOT_FOUND.formatted(id)));
+                        UserMessages.PLAYER_NOT_FOUND.formatted(id)));
     }
 
     private PlayerResponse toResponse(Player player) {
